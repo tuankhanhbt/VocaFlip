@@ -4,6 +4,8 @@ import com.example.vocaflip.common.entity.BaseEntity;
 import com.example.vocaflip.flashcardset.entity.FlashcardSet;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -21,8 +23,15 @@ public class Flashcard extends BaseEntity {
     @JoinColumn(name = "flashcard_set_id", nullable = false)
     private FlashcardSet flashcardSet;
 
-    @Column(nullable = false, length = 500)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private FrontContentType frontContentType = FrontContentType.TEXT;
+
+    @Column(length = 500)
     private String frontText;
+
+    @Column(length = 500)
+    private String frontImageUrl;
 
     @Column(nullable = false, length = 500)
     private String backText;
