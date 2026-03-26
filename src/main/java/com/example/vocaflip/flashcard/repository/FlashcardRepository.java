@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
 
     List<Flashcard> findByFlashcardSetIdOrderByOrderIndexAsc(Long flashcardSetId);
+
+    long countByFlashcardSetId(Long flashcardSetId);
 }
