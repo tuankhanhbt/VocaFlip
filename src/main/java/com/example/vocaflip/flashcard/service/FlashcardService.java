@@ -20,24 +20,24 @@ public class FlashcardService {
     private final FlashcardRepository flashcardRepository;
     private final FlashcardSetRepository flashcardSetRepository;
 
-    public List<FlashcardResponse> getAllBySetId(Long setId) {
-        if (!flashcardSetRepository.existsById(setId)) {
-            throw new ResourceNotFoundException("FlashcardSet", setId);
-        }
-        return flashcardRepository.findByFlashcardSetIdOrderByOrderIndexAsc(setId).stream()
+    public List<FlashcardResponse> getAllBySetId(Long setId, String email) {
+        FlashcardSet set = findOwnedSet(setId, email);
+        return flashcardRepository.findByFlashcardSetIdAndFlashcardSetUserEmailOrderByOrderIndexAsc(
+                set.getId(),
+                normalizeEmail(email)
+            ).stream()
             .map(this::toResponse)
             .toList();
     }
 
-    public FlashcardResponse getById(Long setId, Long cardId) {
-        Flashcard card = findCardInSet(setId, cardId);
+    public FlashcardResponse getById(Long setId, Long cardId, String email) {
+        Flashcard card = findCardInSet(setId, cardId, email);
         return toResponse(card);
     }
 
     @Transactional
-    public FlashcardResponse create(Long setId, FlashcardRequest request) {
-        FlashcardSet set = flashcardSetRepository.findById(setId)
-            .orElseThrow(() -> new ResourceNotFoundException("FlashcardSet", setId));
+    public FlashcardResponse create(Long setId, FlashcardRequest request, String email) {
+        FlashcardSet set = findOwnedSet(setId, email);
 
         Flashcard card = new Flashcard();
         card.setFlashcardSet(set);
@@ -53,8 +53,8 @@ public class FlashcardService {
     }
 
     @Transactional
-    public FlashcardResponse update(Long setId, Long cardId, FlashcardRequest request) {
-        Flashcard card = findCardInSet(setId, cardId);
+    public FlashcardResponse update(Long setId, Long cardId, FlashcardRequest request, String email) {
+        Flashcard card = findCardInSet(setId, cardId, email);
         applyRequest(card, request);
 
         Flashcard saved = flashcardRepository.save(card);
@@ -62,33 +62,38 @@ public class FlashcardService {
     }
 
     @Transactional
-    public void delete(Long setId, Long cardId) {
-        Flashcard card = findCardInSet(setId, cardId);
+    public void delete(Long setId, Long cardId, String email) {
+        Flashcard card = findCardInSet(setId, cardId, email);
         flashcardRepository.delete(card);
     }
 
-    private Flashcard findCardInSet(Long setId, Long cardId) {
-        if (!flashcardSetRepository.existsById(setId)) {
-            throw new ResourceNotFoundException("FlashcardSet", setId);
-        }
-        Flashcard card = flashcardRepository.findById(cardId)
+    private Flashcard findCardInSet(Long setId, Long cardId, String email) {
+        findOwnedSet(setId, email);
+
+        return flashcardRepository.findByIdAndFlashcardSetIdAndFlashcardSetUserEmail(
+                cardId,
+                setId,
+                normalizeEmail(email)
+            )
             .orElseThrow(() -> new ResourceNotFoundException("Flashcard", cardId));
-        if (!card.getFlashcardSet().getId().equals(setId)) {
-            throw new ResourceNotFoundException("Flashcard", cardId);
-        }
-        return card;
+    }
+
+    private FlashcardSet findOwnedSet(Long setId, String email) {
+        return flashcardSetRepository.findByIdAndUserEmail(setId, normalizeEmail(email))
+            .orElseThrow(() -> new ResourceNotFoundException("FlashcardSet", setId));
     }
 
     private void applyRequest(Flashcard card, FlashcardRequest request) {
-        card.setFrontText(request.getFrontText());
+        FrontContentType frontContentType = request.getFrontContentType() == null
+            ? FrontContentType.TEXT
+            : FrontContentType.valueOf(request.getFrontContentType().trim().toUpperCase());
+
+        card.setFrontContentType(frontContentType);
+        card.setFrontText(request.getFrontText() == null ? null : request.getFrontText().trim());
         card.setBackText(request.getBackText());
-        card.setFrontImageUrl(request.getFrontImageUrl());
+        card.setFrontImageUrl(request.getFrontImageUrl() == null ? null : request.getFrontImageUrl().trim());
         card.setExampleText(request.getExampleText());
         card.setNoteText(request.getNoteText());
-
-        if (request.getFrontContentType() != null) {
-            card.setFrontContentType(FrontContentType.valueOf(request.getFrontContentType().toUpperCase()));
-        }
         if (request.getOrderIndex() != null) {
             card.setOrderIndex(request.getOrderIndex());
         }
@@ -108,5 +113,9 @@ public class FlashcardService {
             .createdAt(card.getCreatedAt())
             .updatedAt(card.getUpdatedAt())
             .build();
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase();
     }
 }

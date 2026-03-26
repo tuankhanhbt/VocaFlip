@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,35 +25,37 @@ public class FlashcardSetController {
 
     private final FlashcardSetService flashcardSetService;
 
-    // TODO: Replace hardcoded userId with authenticated user
-    private static final Long TEMP_USER_ID = 1L;
-
     @GetMapping
-    public ResponseEntity<List<FlashcardSetResponse>> getAll() {
-        return ResponseEntity.ok(flashcardSetService.getAllByUserId(TEMP_USER_ID));
+    public ResponseEntity<List<FlashcardSetResponse>> getAll(Authentication authentication) {
+        return ResponseEntity.ok(flashcardSetService.getAllByUserEmail(authentication.getName()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FlashcardSetResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(flashcardSetService.getById(id));
+    public ResponseEntity<FlashcardSetResponse> getById(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(flashcardSetService.getById(id, authentication.getName()));
     }
 
     @PostMapping
-    public ResponseEntity<FlashcardSetResponse> create(@Valid @RequestBody FlashcardSetRequest request) {
-        FlashcardSetResponse response = flashcardSetService.create(TEMP_USER_ID, request);
+    public ResponseEntity<FlashcardSetResponse> create(
+        @Valid @RequestBody FlashcardSetRequest request,
+        Authentication authentication
+    ) {
+        FlashcardSetResponse response = flashcardSetService.create(authentication.getName(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<FlashcardSetResponse> update(
-            @PathVariable Long id,
-            @Valid @RequestBody FlashcardSetRequest request) {
-        return ResponseEntity.ok(flashcardSetService.update(id, request));
+        @PathVariable Long id,
+        @Valid @RequestBody FlashcardSetRequest request,
+        Authentication authentication
+    ) {
+        return ResponseEntity.ok(flashcardSetService.update(id, authentication.getName(), request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        flashcardSetService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+        flashcardSetService.delete(id, authentication.getName());
         return ResponseEntity.noContent().build();
     }
 }

@@ -21,22 +21,21 @@ public class FlashcardSetService {
     private final FlashcardRepository flashcardRepository;
     private final UserRepository userRepository;
 
-    public List<FlashcardSetResponse> getAllByUserId(Long userId) {
-        return flashcardSetRepository.findByUserId(userId).stream()
+    public List<FlashcardSetResponse> getAllByUserEmail(String email) {
+        return flashcardSetRepository.findByUserEmailOrderByCreatedAtDesc(normalizeEmail(email)).stream()
             .map(this::toResponse)
             .toList();
     }
 
-    public FlashcardSetResponse getById(Long id) {
-        FlashcardSet set = flashcardSetRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("FlashcardSet", id));
+    public FlashcardSetResponse getById(Long id, String email) {
+        FlashcardSet set = findOwnedSet(id, email);
         return toResponse(set);
     }
 
     @Transactional
-    public FlashcardSetResponse create(Long userId, FlashcardSetRequest request) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+    public FlashcardSetResponse create(String email, FlashcardSetRequest request) {
+        User user = userRepository.findByEmail(normalizeEmail(email))
+            .orElseThrow(() -> new ResourceNotFoundException("User", email));
 
         FlashcardSet set = new FlashcardSet();
         set.setUser(user);
@@ -55,9 +54,8 @@ public class FlashcardSetService {
     }
 
     @Transactional
-    public FlashcardSetResponse update(Long id, FlashcardSetRequest request) {
-        FlashcardSet set = flashcardSetRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("FlashcardSet", id));
+    public FlashcardSetResponse update(Long id, String email, FlashcardSetRequest request) {
+        FlashcardSet set = findOwnedSet(id, email);
 
         set.setTitle(request.getTitle());
         set.setDescription(request.getDescription());
@@ -74,11 +72,9 @@ public class FlashcardSetService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (!flashcardSetRepository.existsById(id)) {
-            throw new ResourceNotFoundException("FlashcardSet", id);
-        }
-        flashcardSetRepository.deleteById(id);
+    public void delete(Long id, String email) {
+        FlashcardSet set = findOwnedSet(id, email);
+        flashcardSetRepository.delete(set);
     }
 
     private FlashcardSetResponse toResponse(FlashcardSet set) {
@@ -93,5 +89,14 @@ public class FlashcardSetService {
             .createdAt(set.getCreatedAt())
             .updatedAt(set.getUpdatedAt())
             .build();
+    }
+
+    private FlashcardSet findOwnedSet(Long id, String email) {
+        return flashcardSetRepository.findByIdAndUserEmail(id, normalizeEmail(email))
+            .orElseThrow(() -> new ResourceNotFoundException("FlashcardSet", id));
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.vocaflip.flashcard.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -11,7 +12,6 @@ public class FlashcardRequest {
 
     private String frontContentType;
 
-    @NotBlank(message = "Front text is required")
     @Size(max = 500, message = "Front text must be at most 500 characters")
     private String frontText;
 
@@ -27,4 +27,15 @@ public class FlashcardRequest {
     private String noteText;
 
     private Integer orderIndex;
+
+    @AssertTrue(message = "For TEXT cards, frontText is required. For IMAGE cards, frontImageUrl is required")
+    public boolean isFrontContentValid() {
+        String normalizedType = frontContentType == null ? "TEXT" : frontContentType.trim().toUpperCase();
+
+        return switch (normalizedType) {
+            case "TEXT" -> frontText != null && !frontText.trim().isBlank();
+            case "IMAGE" -> frontImageUrl != null && !frontImageUrl.trim().isBlank();
+            default -> false;
+        };
+    }
 }
