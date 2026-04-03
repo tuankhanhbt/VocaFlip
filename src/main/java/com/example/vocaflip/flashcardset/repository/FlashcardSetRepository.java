@@ -14,4 +14,8 @@ public interface FlashcardSetRepository extends JpaRepository<FlashcardSet, Long
     Optional<FlashcardSet> findByIdAndUserEmail(Long id, String email);
 
     boolean existsByIdAndUserEmail(Long id, String email);
+    
+    Optional<FlashcardSet> findByShareCode(String shareCode);
+    
+    boolean existsByShareCode(String shareCode);
 }
