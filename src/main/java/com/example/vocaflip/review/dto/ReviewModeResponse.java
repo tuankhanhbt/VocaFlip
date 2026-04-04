@@ -1,21 +1,19 @@
-package com.example.vocaflip.studysession.dto;
+package com.example.vocaflip.review.dto;
 
 import com.example.vocaflip.flashcard.dto.FlashcardResponse;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StartStudySessionResponse {
-    private Long sessionId;
+public class ReviewModeResponse {
     private Long setId;
     private String setTitle;
-    private Integer totalCards;
-    private List<FlashcardResponse> flashcards;
+    private Integer currentCardIndex;
+    private List<FlashcardResponse> cards;
 }
