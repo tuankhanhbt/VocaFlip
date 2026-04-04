@@ -37,4 +37,20 @@ public class StudySessionCard extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime reviewedAt = LocalDateTime.now();
+
+     @Column(length = 500)
+    private String selectedAnswer;
+
+    @Column(length = 500)
+    private String correctAnswer;
+
+    @Column(name = "selected_flashcard_id")
+    private Long selectedFlashcardId;
+
+    @Column(name = "correct_flashcard_id")
+    private Long correctFlashcardId;
+    
+    @Column(nullable = false)
+    private Boolean correct = false;
+
 }
