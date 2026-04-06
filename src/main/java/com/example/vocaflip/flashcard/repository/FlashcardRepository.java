@@ -14,4 +14,6 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
     long countByFlashcardSetId(Long flashcardSetId);
 
     Optional<Flashcard> findByIdAndFlashcardSetIdAndFlashcardSetUserEmail(Long id, Long flashcardSetId, String email);
+
+    void deleteByFlashcardSetId(Long flashcardSetId);
 }

@@ -10,6 +10,10 @@ import com.example.vocaflip.flashcardset.dto.SharedFlashcardSetResponse;
 import com.example.vocaflip.flashcardset.entity.FlashcardSet;
 import com.example.vocaflip.flashcardset.entity.SetVisibility;
 import com.example.vocaflip.flashcardset.repository.FlashcardSetRepository;
+import com.example.vocaflip.progress.repository.UserCardProgressRepository;
+import com.example.vocaflip.review.repository.DeckReviewProgressRepository;
+import com.example.vocaflip.studysession.repository.StudySessionCardRepository;
+import com.example.vocaflip.studysession.repository.StudySessionRepository;
 import com.example.vocaflip.user.entity.User;
 import com.example.vocaflip.user.repository.UserRepository;
 import java.util.List;
@@ -27,6 +31,10 @@ public class FlashcardSetService {
 
     private final FlashcardSetRepository flashcardSetRepository;
     private final FlashcardRepository flashcardRepository;
+    private final UserCardProgressRepository userCardProgressRepository;
+    private final DeckReviewProgressRepository deckReviewProgressRepository;
+    private final StudySessionRepository studySessionRepository;
+    private final StudySessionCardRepository studySessionCardRepository;
     private final UserRepository userRepository;
 
     @Value("${app.frontend.url:http://localhost:3000}")
@@ -85,6 +93,11 @@ public class FlashcardSetService {
     @Transactional
     public void delete(Long id, String email) {
         FlashcardSet set = findOwnedSet(id, email);
+        userCardProgressRepository.deleteByFlashcardFlashcardSetId(set.getId());
+        studySessionCardRepository.deleteByStudySessionFlashcardSetId(set.getId());
+        deckReviewProgressRepository.deleteByFlashcardSetId(set.getId());
+        studySessionRepository.deleteByFlashcardSetId(set.getId());
+        flashcardRepository.deleteByFlashcardSetId(set.getId());
         flashcardSetRepository.delete(set);
     }
     
