@@ -19,4 +19,6 @@ public class FlashcardResponse {
     private Integer orderIndex;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String phonetic;
+    private String audioUrl;
 }

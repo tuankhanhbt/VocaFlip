@@ -44,4 +44,10 @@ public class Flashcard extends BaseEntity {
 
     @Column(nullable = false)
     private Integer orderIndex = 0;
+
+    @Column(length = 255)
+    private String phonetic;
+
+    @Column(length = 500)
+    private String audioUrl;
 }
