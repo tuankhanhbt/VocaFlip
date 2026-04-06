@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StudySessionCardRepository extends JpaRepository<StudySessionCard, Long> {
 
     List<StudySessionCard> findByStudySessionIdOrderByOrderIndexAsc(Long studySessionId);
+
+    void deleteByStudySessionFlashcardSetId(Long flashcardSetId);
 }

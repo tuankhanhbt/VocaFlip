@@ -8,6 +8,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,4 +37,49 @@ public class FlashcardSet extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean archived = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private SetVisibility visibility = SetVisibility.PRIVATE;
+
+    @Column(length = 20, unique = true)
+    private String shareCode;
+
+    @Column(nullable = false)
+    private Boolean allowCopy = false;
+
+    @Column(nullable = false)
+    private Boolean allowReview = true;
+
+    public SetVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(SetVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public String getShareCode() {
+        return shareCode;
+    }
+
+    public void setShareCode(String shareCode) {
+        this.shareCode = shareCode;
+    }
+
+    public Boolean getAllowCopy() {
+        return allowCopy;
+    }
+
+    public void setAllowCopy(Boolean allowCopy) {
+        this.allowCopy = allowCopy;
+    }
+
+    public Boolean getAllowReview() {
+        return allowReview;
+    }
+
+    public void setAllowReview(Boolean allowReview) {
+        this.allowReview = allowReview;
+    }
 }

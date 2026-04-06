@@ -1,0 +1,234 @@
+{
+  "FlashcardSet API": {
+    "GET /api/flashcard-sets": {
+      "description": "Lấy tất cả flashcard sets của user",
+      "status": 200,
+      "response": [
+        {
+          "id": 1,
+          "title": "English Basics",
+          "description": "Basic English words",
+          "sourceLanguage": "en",
+          "targetLanguage": "vi",
+          "archived": false,
+          "cardCount": 3,
+          "createdAt": "2026-03-23T09:35:57.073172",
+          "updatedAt": "2026-03-23T09:35:57.073172"
+        }
+      ]
+    },
+    "GET /api/flashcard-sets/{id}": {
+      "description": "Lấy 1 flashcard set theo ID",
+      "status": 200,
+      "response": {
+        "id": 1,
+        "title": "English Basics",
+        "description": "Basic English words",
+        "sourceLanguage": "en",
+        "targetLanguage": "vi",
+        "archived": false,
+        "cardCount": 3,
+        "createdAt": "2026-03-23T09:35:57.073172",
+        "updatedAt": "2026-03-23T09:35:57.073172"
+      }
+    },
+    "POST /api/flashcard-sets": {
+      "description": "Tạo flashcard set mới",
+      "status": 201,
+      "request": {
+        "title": "English Basics",
+        "description": "Basic English words",
+        "sourceLanguage": "en",
+        "targetLanguage": "vi"
+      },
+      "response": {
+        "id": 1,
+        "title": "English Basics",
+        "description": "Basic English words",
+        "sourceLanguage": "en",
+        "targetLanguage": "vi",
+        "archived": false,
+        "cardCount": 0,
+        "createdAt": "2026-03-23T09:35:57.073172",
+        "updatedAt": "2026-03-23T09:35:57.073172"
+      }
+    },
+    "PUT /api/flashcard-sets/{id}": {
+      "description": "Cập nhật flashcard set",
+      "status": 200,
+      "request": {
+        "title": "English Basics Updated",
+        "description": "Updated description",
+        "sourceLanguage": "en",
+        "targetLanguage": "vi"
+      },
+      "response": {
+        "id": 1,
+        "title": "English Basics Updated",
+        "description": "Updated description",
+        "sourceLanguage": "en",
+        "targetLanguage": "vi",
+        "archived": false,
+        "cardCount": 3,
+        "createdAt": "2026-03-23T09:35:57.073172",
+        "updatedAt": "2026-03-23T09:40:12.456789"
+      }
+    },
+    "DELETE /api/flashcard-sets/{id}": {
+      "description": "Xóa flashcard set",
+      "status": 204,
+      "response": "No Content"
+    },
+    "Error 404": {
+      "description": "Không tìm thấy resource",
+      "status": 404,
+      "response": {
+        "timestamp": "2026-03-23T09:35:57.073172",
+        "status": 404,
+        "error": "Not Found",
+        "message": "FlashcardSet not found with id: 999"
+      }
+    },
+    "Error 400 - Validation": {
+      "description": "Validation lỗi (ví dụ thiếu title)",
+      "status": 400,
+      "response": {
+        "timestamp": "2026-03-23T09:35:57.073172",
+        "status": 400,
+        "error": "Validation Failed",
+        "fieldErrors": {
+          "title": "Title is required"
+        }
+      }
+    }
+  },
+
+  "Flashcard API": {
+    "GET /api/flashcard-sets/{setId}/flashcards": {
+      "description": "Lấy tất cả flashcards trong 1 set",
+      "status": 200,
+      "response": [
+        {
+          "id": 1,
+          "flashcardSetId": 1,
+          "frontContentType": "TEXT",
+          "frontText": "Hello",
+          "frontImageUrl": null,
+          "backText": "Xin chào",
+          "exampleText": "Hello, how are you?",
+          "noteText": "Common greeting",
+          "orderIndex": 0,
+          "createdAt": "2026-03-23T09:38:16.086636",
+          "updatedAt": "2026-03-23T09:38:16.086636"
+        },
+        {
+          "id": 2,
+          "flashcardSetId": 1,
+          "frontContentType": "TEXT",
+          "frontText": "Goodbye",
+          "frontImageUrl": null,
+          "backText": "Tạm biệt",
+          "exampleText": "Goodbye, see you later!",
+          "noteText": null,
+          "orderIndex": 1,
+          "createdAt": "2026-03-23T09:39:00.123456",
+          "updatedAt": "2026-03-23T09:39:00.123456"
+        }
+      ]
+    },
+    "GET /api/flashcard-sets/{setId}/flashcards/{id}": {
+      "description": "Lấy 1 flashcard theo ID",
+      "status": 200,
+      "response": {
+        "id": 1,
+        "flashcardSetId": 1,
+        "frontContentType": "TEXT",
+        "frontText": "Hello",
+        "frontImageUrl": null,
+        "backText": "Xin chào",
+        "exampleText": "Hello, how are you?",
+        "noteText": "Common greeting",
+        "orderIndex": 0,
+        "createdAt": "2026-03-23T09:38:16.086636",
+        "updatedAt": "2026-03-23T09:38:16.086636"
+      }
+    },
+    "POST /api/flashcard-sets/{setId}/flashcards": {
+      "description": "Tạo flashcard mới trong set",
+      "status": 201,
+      "request": {
+        "frontText": "Hello",
+        "backText": "Xin chào",
+        "frontContentType": "TEXT",
+        "frontImageUrl": null,
+        "exampleText": "Hello, how are you?",
+        "noteText": "Common greeting",
+        "orderIndex": null
+      },
+      "response": {
+        "id": 1,
+        "flashcardSetId": 1,
+        "frontContentType": "TEXT",
+        "frontText": "Hello",
+        "frontImageUrl": null,
+        "backText": "Xin chào",
+        "exampleText": "Hello, how are you?",
+        "noteText": "Common greeting",
+        "orderIndex": 0,
+        "createdAt": "2026-03-23T09:38:16.086636",
+        "updatedAt": "2026-03-23T09:38:16.086636"
+      }
+    },
+    "PUT /api/flashcard-sets/{setId}/flashcards/{id}": {
+      "description": "Cập nhật flashcard",
+      "status": 200,
+      "request": {
+        "frontText": "Hello!",
+        "backText": "Xin chào!",
+        "exampleText": "Hello, nice to meet you!",
+        "noteText": "Updated greeting"
+      },
+      "response": {
+        "id": 1,
+        "flashcardSetId": 1,
+        "frontContentType": "TEXT",
+        "frontText": "Hello!",
+        "frontImageUrl": null,
+        "backText": "Xin chào!",
+        "exampleText": "Hello, nice to meet you!",
+        "noteText": "Updated greeting",
+        "orderIndex": 0,
+        "createdAt": "2026-03-23T09:38:16.086636",
+        "updatedAt": "2026-03-23T09:42:30.789012"
+      }
+    },
+    "DELETE /api/flashcard-sets/{setId}/flashcards/{id}": {
+      "description": "Xóa flashcard",
+      "status": 204,
+      "response": "No Content"
+    },
+    "Error 404": {
+      "description": "Card không thuộc set hoặc không tồn tại",
+      "status": 404,
+      "response": {
+        "timestamp": "2026-03-23T09:38:16.086636",
+        "status": 404,
+        "error": "Not Found",
+        "message": "Flashcard not found with id: 999"
+      }
+    },
+    "Error 400 - Validation": {
+      "description": "Validation lỗi (ví dụ thiếu frontText, backText)",
+      "status": 400,
+      "response": {
+        "timestamp": "2026-03-23T09:38:16.086636",
+        "status": 400,
+        "error": "Validation Failed",
+        "fieldErrors": {
+          "frontText": "Front text is required",
+          "backText": "Back text is required"
+        }
+      }
+    }
+  }
+}

@@ -10,4 +10,6 @@ public interface UserCardProgressRepository extends JpaRepository<UserCardProgre
     Optional<UserCardProgress> findByUserIdAndFlashcardId(Long userId, Long flashcardId);
 
     List<UserCardProgress> findByUserId(Long userId);
+
+    void deleteByFlashcardFlashcardSetId(Long flashcardSetId);
 }
