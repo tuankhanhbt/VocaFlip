@@ -1,25 +1,17 @@
 package com.example.vocaflip.flashcardset.dto;
 
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class FlashcardSetResponse {
+public class SharedFlashcardSetResponse {
 
     private Long id;
     private String title;
     private String description;
     private String sourceLanguage;
     private String targetLanguage;
-    private Boolean archived;
     private Long cardCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    
-    private String visibility;
-    private String shareCode;
     private Boolean allowCopy;
-    private Boolean allowReview;
 }

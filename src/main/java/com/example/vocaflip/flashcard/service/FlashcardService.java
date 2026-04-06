@@ -7,6 +7,7 @@ import com.example.vocaflip.flashcard.entity.Flashcard;
 import com.example.vocaflip.flashcard.entity.FrontContentType;
 import com.example.vocaflip.flashcard.repository.FlashcardRepository;
 import com.example.vocaflip.flashcardset.entity.FlashcardSet;
+import com.example.vocaflip.flashcardset.entity.SetVisibility;
 import com.example.vocaflip.flashcardset.repository.FlashcardSetRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,19 @@ public class FlashcardService {
                 set.getId(),
                 normalizeEmail(email)
             ).stream()
+            .map(this::toResponse)
+            .toList();
+    }
+    
+    public List<FlashcardResponse> getAllByShareCode(String shareCode) {
+        FlashcardSet set = flashcardSetRepository.findByShareCode(shareCode)
+            .orElseThrow(() -> new ResourceNotFoundException("SharedFlashcardSet", shareCode));
+            
+        if (set.getVisibility() != SetVisibility.PUBLIC) {
+            throw new ResourceNotFoundException("SharedFlashcardSet", shareCode);
+        }
+        
+        return flashcardRepository.findByFlashcardSetIdOrderByOrderIndexAsc(set.getId()).stream()
             .map(this::toResponse)
             .toList();
     }
