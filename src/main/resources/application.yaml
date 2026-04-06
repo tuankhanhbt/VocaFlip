@@ -27,7 +27,7 @@ app:
     jwt-expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 google:
   ai:
-    api-key: AIzaSyBAqwi3qeECkQwPwG5f3VQ1iBZpgJ2B8Ik
+    api-key: ${GEMINI_API_KEY}
     model: gemini-2.5-flash
 
 dictionary:
