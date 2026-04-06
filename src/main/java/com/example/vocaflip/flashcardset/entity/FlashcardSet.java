@@ -50,4 +50,36 @@ public class FlashcardSet extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean allowReview = true;
+
+    public SetVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(SetVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public String getShareCode() {
+        return shareCode;
+    }
+
+    public void setShareCode(String shareCode) {
+        this.shareCode = shareCode;
+    }
+
+    public Boolean getAllowCopy() {
+        return allowCopy;
+    }
+
+    public void setAllowCopy(Boolean allowCopy) {
+        this.allowCopy = allowCopy;
+    }
+
+    public Boolean getAllowReview() {
+        return allowReview;
+    }
+
+    public void setAllowReview(Boolean allowReview) {
+        this.allowReview = allowReview;
+    }
 }

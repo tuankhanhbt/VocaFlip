@@ -4,20 +4,22 @@ import com.example.vocaflip.common.exception.ResourceNotFoundException;
 import com.example.vocaflip.flashcard.repository.FlashcardRepository;
 import com.example.vocaflip.flashcardset.dto.FlashcardSetRequest;
 import com.example.vocaflip.flashcardset.dto.FlashcardSetResponse;
-import com.example.vocaflip.flashcardset.entity.FlashcardSet;
-import com.example.vocaflip.flashcardset.repository.FlashcardSetRepository;
-import com.example.vocaflip.user.entity.User;
-import com.example.vocaflip.user.repository.UserRepository;
 import com.example.vocaflip.flashcardset.dto.ShareSettingsRequest;
 import com.example.vocaflip.flashcardset.dto.ShareLinkResponse;
 import com.example.vocaflip.flashcardset.dto.SharedFlashcardSetResponse;
+import com.example.vocaflip.flashcardset.entity.FlashcardSet;
 import com.example.vocaflip.flashcardset.entity.SetVisibility;
+import com.example.vocaflip.flashcardset.repository.FlashcardSetRepository;
+import com.example.vocaflip.user.entity.User;
+import com.example.vocaflip.user.repository.UserRepository;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +93,7 @@ public class FlashcardSetService {
         FlashcardSet set = findOwnedSet(id, email);
         
         if (request.visibility() != null) {
-            set.setVisibility(SetVisibility.valueOf(request.visibility()));
+            set.setVisibility(parseVisibility(request.visibility()));
         }
         if (request.allowCopy() != null) {
             set.setAllowCopy(request.allowCopy());
@@ -126,33 +128,34 @@ public class FlashcardSetService {
             throw new ResourceNotFoundException("SharedFlashcardSet", shareCode);
         }
         
-        return SharedFlashcardSetResponse.builder()
-            .id(set.getId())
-            .title(set.getTitle())
-            .description(set.getDescription())
-            .sourceLanguage(set.getSourceLanguage())
-            .targetLanguage(set.getTargetLanguage())
-            .cardCount(flashcardRepository.countByFlashcardSetId(set.getId()))
-            .allowCopy(set.getAllowCopy())
-            .build();
+        return new SharedFlashcardSetResponse(
+            set.getId(),
+            set.getTitle(),
+            set.getDescription(),
+            set.getSourceLanguage(),
+            set.getTargetLanguage(),
+            flashcardRepository.countByFlashcardSetId(set.getId()),
+            set.getAllowCopy(),
+            set.getAllowReview()
+        );
     }
 
     private FlashcardSetResponse toResponse(FlashcardSet set) {
-        return FlashcardSetResponse.builder()
-            .id(set.getId())
-            .title(set.getTitle())
-            .description(set.getDescription())
-            .sourceLanguage(set.getSourceLanguage())
-            .targetLanguage(set.getTargetLanguage())
-            .archived(set.getArchived())
-            .cardCount(flashcardRepository.countByFlashcardSetId(set.getId()))
-            .createdAt(set.getCreatedAt())
-            .updatedAt(set.getUpdatedAt())
-            .visibility(set.getVisibility().name())
-            .shareCode(set.getShareCode())
-            .allowCopy(set.getAllowCopy())
-            .allowReview(set.getAllowReview())
-            .build();
+        return new FlashcardSetResponse(
+            set.getId(),
+            set.getTitle(),
+            set.getDescription(),
+            set.getSourceLanguage(),
+            set.getTargetLanguage(),
+            set.getArchived(),
+            flashcardRepository.countByFlashcardSetId(set.getId()),
+            set.getCreatedAt(),
+            set.getUpdatedAt(),
+            set.getVisibility().name(),
+            set.getShareCode(),
+            set.getAllowCopy(),
+            set.getAllowReview()
+        );
     }
 
     private FlashcardSet findOwnedSet(Long id, String email) {
@@ -162,5 +165,27 @@ public class FlashcardSetService {
 
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase();
+    }
+
+    private SetVisibility parseVisibility(String rawVisibility) {
+        String normalizedVisibility = rawVisibility.trim().toUpperCase();
+
+        try {
+            SetVisibility visibility = SetVisibility.valueOf(normalizedVisibility);
+
+            if (visibility == SetVisibility.SHARED) {
+                throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "SHARED visibility is not supported yet"
+                );
+            }
+
+            return visibility;
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Visibility must be one of: PRIVATE, PUBLIC"
+            );
+        }
     }
 }

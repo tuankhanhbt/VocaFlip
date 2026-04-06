@@ -65,7 +65,7 @@ public class FlashcardSetController {
     @PatchMapping("/{id}/share-settings")
     public ResponseEntity<FlashcardSetResponse> updateShareSettings(
         @PathVariable Long id,
-        @RequestBody ShareSettingsRequest request,
+        @Valid @RequestBody ShareSettingsRequest request,
         Authentication authentication
     ) {
         return ResponseEntity.ok(flashcardSetService.updateShareSettings(id, authentication.getName(), request));

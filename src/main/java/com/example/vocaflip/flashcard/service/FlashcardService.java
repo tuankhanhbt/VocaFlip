@@ -11,8 +11,10 @@ import com.example.vocaflip.flashcardset.entity.SetVisibility;
 import com.example.vocaflip.flashcardset.repository.FlashcardSetRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +36,13 @@ public class FlashcardService {
     public List<FlashcardResponse> getAllByShareCode(String shareCode) {
         FlashcardSet set = flashcardSetRepository.findByShareCode(shareCode)
             .orElseThrow(() -> new ResourceNotFoundException("SharedFlashcardSet", shareCode));
-            
+             
         if (set.getVisibility() != SetVisibility.PUBLIC) {
             throw new ResourceNotFoundException("SharedFlashcardSet", shareCode);
+        }
+
+        if (!Boolean.TRUE.equals(set.getAllowReview())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Review is disabled for this set");
         }
         
         return flashcardRepository.findByFlashcardSetIdOrderByOrderIndexAsc(set.getId()).stream()
