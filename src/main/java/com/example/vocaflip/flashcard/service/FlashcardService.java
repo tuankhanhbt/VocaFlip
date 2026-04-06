@@ -129,6 +129,8 @@ public class FlashcardService {
             .backText(card.getBackText())
             .exampleText(card.getExampleText())
             .noteText(card.getNoteText())
+            .phonetic(card.getPhonetic())
+            .audioUrl(card.getAudioUrl())
             .orderIndex(card.getOrderIndex())
             .createdAt(card.getCreatedAt())
             .updatedAt(card.getUpdatedAt())

@@ -1,0 +1,3 @@
+ALTER TABLE flashcards
+    ADD COLUMN phonetic VARCHAR(255) NULL,
+    ADD COLUMN audio_url VARCHAR(500) NULL;

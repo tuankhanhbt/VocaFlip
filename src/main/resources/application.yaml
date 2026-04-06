@@ -25,3 +25,11 @@ app:
   security:
     jwt-secret: ${JWT_SECRET:change-this-secret-key-to-a-long-random-value-1234567890}
     jwt-expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+google:
+  ai:
+    api-key: AIzaSyBAqwi3qeECkQwPwG5f3VQ1iBZpgJ2B8Ik
+    model: gemini-2.5-flash
+
+dictionary:
+  api:
+    base-url: https://api.dictionaryapi.dev/api/v2/entries/en
