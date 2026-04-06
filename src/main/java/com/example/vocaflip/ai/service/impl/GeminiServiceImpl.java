@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class GeminiServiceImpl implements GeminiService {
@@ -22,17 +25,24 @@ public class GeminiServiceImpl implements GeminiService {
     private final String model;
 
     public GeminiServiceImpl(
-        @Value("${google.ai.api-key}") String apiKey,
+        @Value("${google.ai.api-key:}") String apiKey,
         @Value("${google.ai.model}") String model
     ) {
         this.model = model;
-        this.client = Client.builder()
-            .apiKey(apiKey)
-            .build();
+        this.client = StringUtils.hasText(apiKey)
+            ? Client.builder().apiKey(apiKey).build()
+            : null;
     }
 
     @Override
     public List<GeneratedCardContent> generateCardsByTopic(String topic, int count, String targetLanguage) {
+        if (client == null) {
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Gemini API is not configured. Please set GEMINI_API_KEY."
+            );
+        }
+
         try {
             String prompt = """
                 Generate exactly %d English vocabulary flashcards for the topic: "%s".
